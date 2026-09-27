@@ -1,9 +1,24 @@
-# FactStore client helpers
+# Withdrawn: Fact client helpers
 
-`univers-aip-lib-fact-client@0.1.0` provides retry-safe assertion and read projection helpers for a caller-selected `FactStore` Port. The crate keeps the existing API: `assert_fact_for_organization`, `FactAssertOutcome::{Created, Unchanged}` with `fact()` and `receipt()`, `list_fact_values`, `latest_fact_value`, and `fact_value_at`.
+**Do not add `univers-aip-lib-fact-client@0.1.0` to new consumers.**
+This package was incorrectly classified as a generic library. Fact contracts
+already belong to the existing C0 World contract: `FactStore`, `DataFact`, and
+`FactQuery`. Fact acceptance, persistence, canonical identity and authoritative
+idempotency/write receipts belong to the World implementation.
 
-The assertion helper checks the requested organization scope, appends a new assertion only when the value changes, and reports same-value writes as `Skipped` replay receipts. Assertion identity is deterministic from the caller's idempotency key. Latest projection ranks every matching result by `asserted_at`, regardless of caller limit; temporal projection honors the FactStore query's half-open validity window.
+The extracted `assert_fact_for_organization` helper skipped the World write when
+its latest query returned an equal value, then locally constructed a
+`Skipped`/`replayed` receipt. That observation is not a durable World commit or
+replay and must not be presented as one. Depending only on public Ports did not
+make this domain behavior a generic technical mechanism.
 
-This is a pure Port helper. It does not implement `FactStore`, persist data, choose a World, authorize organization access, or own Fact/World authority. The selected Port remains responsible for scope enforcement and durable atomic writes; receipt and replay guarantees depend on that Port.
+Consumers should pass their business inputs through the existing World Ports
+and preserve the actual World-issued outcome/receipt. Application-specific
+read selection can remain with the consumer; it must not become a second Fact
+authority. No replacement Fact contract or renamed client library is planned.
 
-The package pins the C0 Data and World contracts to `1.0.0-rc.1` with default features disabled and only the required core/evidence/operating features enabled. Run `bash scripts/check.sh`, `bash scripts/build.sh`, `bash scripts/package.sh`, and `bash scripts/publish.sh [--dry-run]` in this independent repository. Git hooks run formatting on commit and the full package check on push.
+Resource removed this dependency in develop commit
+`37b20d176a315525ec7f1a6d19946efc394be19b`. The 0.1.0 source and published archive
+remain historical evidence; their passing tests do not establish a valid
+architectural boundary. Registry yanking is used where supported to stop new
+resolution while preserving existing lockfile reproducibility.
