@@ -1,0 +1,27 @@
+[package]
+name = "univers-aip-lib-fact-client"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.89"
+license = "MIT OR Apache-2.0"
+description = "Retry-safe Fact assertion and projection helpers over the pure World FactStore Port"
+repository = "https://github.com/hsudatalks/univers-aip-libs-rs-fact-client"
+publish = ["univers"]
+readme = "README.md"
+include = ["Cargo.toml", "Cargo.lock", "README.md", "src/**", "scripts/**", ".cargo/config.toml"]
+
+[workspace]
+members = ["."]
+resolver = "2"
+
+[dependencies]
+chrono = { version = "0.4", features = ["clock"] }
+uuid = { version = "1", features = ["v5"] }
+univers-aip-contracts-data = { version = "=1.0.0-rc.1", registry = "univers", default-features = false, features = ["core"] }
+univers-aip-contracts-world = { version = "=1.0.0-rc.1", registry = "univers", default-features = false, features = ["evidence", "operating", "operating-operating-fact"] }
+
+[dev-dependencies]
+async-trait = "0.1"
+serde_json = "1"
+tokio = { version = "1", features = ["macros", "rt", "sync"] }
+uuid = { version = "1", features = ["v4"] }
